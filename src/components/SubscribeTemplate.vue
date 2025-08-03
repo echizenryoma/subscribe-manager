@@ -7,25 +7,31 @@
         <v-btn color="primary" @click="openAddDialog">添加模板</v-btn>
       </v-toolbar>
 
-      <v-list>
-        <v-list-item-group>
-          <v-list-item v-for="(template, index) in templates" :key="index">
-            <v-list-item-content>
-              <div>
-                <strong>{{ template.name }}</strong>
-              </div>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn icon @click.stop="openEditDialog(template, index)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn icon @click.stop="confirmDelete(index)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+      <v-simple-table fixed-header>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="px-2">模板名称</th>
+              <th class="px-2">输出编码</th>
+              <th class="px-2">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(template, index) in templates" :key="templates.name">
+              <td class="px-2">{{ template.name }}</td>
+              <td class="px-2">{{ template.encode }}</td>
+              <td class="px-2">
+                <v-btn icon size="small" density="compact" @click.stop="openEditDialog(template, index)">
+                  <v-icon size="small">mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn icon size="small" density="compact" @click.stop="confirmDelete(index)">
+                  <v-icon size="small">mdi-delete</v-icon>
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
 
       <!-- 添加/编辑模板的对话框 -->
       <v-dialog v-model="dialog" max-width="800" max-height="600">
@@ -34,7 +40,8 @@
             <span>{{ isEditing ? '编辑模板' : '添加模板' }}</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentTemplate.name" label="模板名称" />
+            <v-text-field v-model="currentTemplate.name" label="模板名称" :disabled="isEditing" />
+            <v-select v-model="currentTemplate.encode" :items="encodeItems" label="编码方式"></v-select>
             <v-textarea v-model="currentTemplate.content" label="模板内容" rows="10" />
           </v-card-text>
           <v-card-actions>
@@ -66,9 +73,10 @@ export default {
       templates: [],
       dialog: false,
       confirmDialog: false,
-      currentTemplate: { name: '', content: '' },
+      currentTemplate: { name: '', content: '', encode: 'text' },
       currentIndex: -1,
       isEditing: false,
+      encodeItems: ["text", "base64"],
     };
   },
   mounted() {
@@ -76,7 +84,7 @@ export default {
   },
   methods: {
     openAddDialog() {
-      this.currentTemplate = { name: '', content: '' };
+      this.currentTemplate = { name: '', content: '', encode: 'text' };
       this.isEditing = false;
       this.dialog = true;
     },

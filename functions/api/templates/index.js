@@ -8,10 +8,7 @@ export async function onRequest({ request, env }) {
     const list = index ? JSON.parse(index) : [];
     const templates = [];
     for (const name of list) {
-      templates.push({
-        name: name,
-        content: await kv.get(`template:${name}`)
-      });
+      templates.push(JSON.parse(await kv.get(`template:${name}`)));
     }
     return new Response(JSON.stringify(templates), {
       headers: { "Content-Type": "application/json" }
@@ -19,8 +16,9 @@ export async function onRequest({ request, env }) {
   }
 
   if (request.method === 'POST') {
-    const { name, content } = await request.json();
-    await kv.put(`template:${name}`, content);
+    const obj = await request.json();
+    const name = obj.name;
+    await kv.put(`template:${name}`, JSON.stringify(obj));
     const index = await kv.get(index_key);
     const list = index ? JSON.parse(index) : [];
     if (!list.includes(name)) {
