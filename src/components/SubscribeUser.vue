@@ -7,26 +7,31 @@
         <v-btn color="primary" @click="openAddDialog">添加账户</v-btn>
       </v-toolbar>
 
-      <v-list>
-        <v-list-item-group>
-          <v-list-item v-for="(template, index) in users" :key="index">
-            <v-list-item-name>
-              <div>
-                <strong>{{ template.uuid }}</strong>
-                <strong>{{ template.name }}</strong>
-              </div>
-            </v-list-item-name>
-            <v-list-item-action>
-              <v-btn icon @click.stop="openEditDialog(template, index)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn icon @click.stop="confirmDelete(index)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
+      <v-simple-table fixed-header>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="px-2">UUID</th>
+              <th class="px-2">账户名称</th>
+              <th class="px-2">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(user, index) in users" :key="user.uuid">
+              <td class="px-2">{{ user.uuid }}</td>
+              <td class="px-2">{{ user.name }}</td>
+              <td class="px-2">
+                <v-btn icon size="small" density="compact" @click.stop="openEditDialog(user, index)">
+                  <v-icon size="small">mdi-pencil</v-icon>
+                </v-btn>
+                <v-btn icon size="small" density="compact" @click.stop="confirmDelete(index)">
+                  <v-icon size="small">mdi-delete</v-icon>
+                </v-btn>
+              </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
 
       <!-- 添加/编辑账户的对话框 -->
       <v-dialog v-model="dialog" max-width="500">
@@ -37,10 +42,10 @@
           <v-card-text>
             <v-row align="center">
               <v-col cols="10">
-                <v-text-field v-model="currentUser.uuid" label="UUID" />
+                <v-text-field v-model="currentUser.uuid" label="UUID" :disabled="isEditing" />
               </v-col>
               <v-col cols="2">
-                <v-btn icon @click="generateUUID">
+                <v-btn icon @click="generateUUID" :disabled="isEditing">
                   <v-icon>mdi-refresh</v-icon>
                 </v-btn>
               </v-col>
@@ -76,7 +81,7 @@ export default {
       users: [],
       dialog: false,
       confirmDialog: false,
-      currentUser: { name: '', name: '' },
+      currentUser: { uuid: '', name: '' },
       currentIndex: -1,
       isEditing: false,
     };
@@ -86,7 +91,7 @@ export default {
   },
   methods: {
     openAddDialog() {
-      this.currentUser = { name: '', name: '' };
+      this.currentUser = { uuid: '', name: '' };
       this.isEditing = false;
       this.dialog = true;
     },
@@ -125,7 +130,7 @@ export default {
       this.confirmDialog = true;
     },
     async deleteUser() {
-      await fetch(`/api/users/${this.currentUser.name}`, {
+      await fetch(`/api/users/${this.currentUser.uuid}`, {
         method: 'DELETE',
       })
       await this.fetchUser();
@@ -139,8 +144,7 @@ export default {
 </script>
 
 <style>
-.v-list-item {
-  display: flex;
-  justify-name: space-between;
+.v-data-table {
+  margin-top: 20px;
 }
 </style>
