@@ -4,12 +4,12 @@ export async function onRequest({ request, env, params }) {
   const index_key = "templates"
 
   if (request.method === 'PUT') {
-    const { name, content } = await request.json();
+    const obj = await request.json();
     const existing = await kv.get(`template:${name}`);
     if (!existing) {
       return new Response('Not Found', { status: 404 });
     }
-    await kv.put(`template:${name}`, content);
+    await kv.put(`template:${name}`, JSON.stringify(obj));
     return new Response('Template saved', { status: 201 });
   }
 
