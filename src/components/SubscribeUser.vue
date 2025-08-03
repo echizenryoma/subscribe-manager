@@ -1,37 +1,28 @@
 <template>
   <v-app>
     <v-container>
-      <v-toolbar>
-        <v-toolbar-title>账户管理</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="openAddDialog">添加账户</v-btn>
-      </v-toolbar>
+      <v-sheet border rounded>
+        <v-data-table :headers="headers" :hide-default-footer="true" :items="users">
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>
+                <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
+                账户管理
+              </v-toolbar-title>
 
-      <v-simple-table fixed-header>
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="px-2">UUID</th>
-              <th class="px-2">账户名称</th>
-              <th class="px-2">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(user, index) in users" :key="user.uuid">
-              <td class="px-2">{{ user.uuid }}</td>
-              <td class="px-2">{{ user.name }}</td>
-              <td class="px-2">
-                <v-btn icon size="small" density="compact" @click.stop="openEditDialog(user, index)">
-                  <v-icon size="small">mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn icon size="small" density="compact" @click.stop="confirmDelete(index)">
-                  <v-icon size="small">mdi-delete</v-icon>
-                </v-btn>
-              </td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
+              <v-btn class="me-2" prepend-icon="mdi-plus" rounded="lg" text="添加账户" border
+                @click="openAddDialog"></v-btn>
+            </v-toolbar>
+          </template>
+
+          <template v-slot:item.actions="{ item }">
+            <div class="d-flex ga-2 justify-end">
+              <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="openEditDialog(item)"></v-icon>
+              <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="confirmDelete(item)"></v-icon>
+            </div>
+          </template>
+        </v-data-table>
+      </v-sheet>
 
       <!-- 添加/编辑账户的对话框 -->
       <v-dialog v-model="dialog" max-width="500">
@@ -46,7 +37,7 @@
               </v-col>
               <v-col cols="2">
                 <v-btn icon @click="generateUUID" :disabled="isEditing">
-                  <v-icon>mdi-refresh</v-icon>
+                  <v-icon size="small">mdi-refresh</v-icon>
                 </v-btn>
               </v-col>
             </v-row>
@@ -82,8 +73,12 @@ export default {
       dialog: false,
       confirmDialog: false,
       currentUser: { uuid: '', name: '' },
-      currentIndex: -1,
       isEditing: false,
+      headers: [
+        { title: 'UUID', key: 'uuid' },
+        { title: '账户名称', key: 'name' },
+        { title: '操作', key: 'actions', align: 'end', sortable: false },
+      ]
     };
   },
   mounted() {
@@ -125,8 +120,8 @@ export default {
       this.closeDialog();
       await this.fetchUser();
     },
-    confirmDelete(index) {
-      this.currentIndex = index;
+    confirmDelete(user) {
+      this.currentUser = user;
       this.confirmDialog = true;
     },
     async deleteUser() {
@@ -142,9 +137,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.v-data-table {
-  margin-top: 20px;
-}
-</style>

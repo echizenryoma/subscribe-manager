@@ -1,37 +1,28 @@
 <template>
   <v-app>
     <v-container>
-      <v-toolbar>
-        <v-toolbar-title>模板管理</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="openAddDialog">添加模板</v-btn>
-      </v-toolbar>
+      <v-sheet border rounded>
+        <v-data-table :headers="headers" :hide-default-footer="true" :items="templates">
+          <template v-slot:top>
+            <v-toolbar flat>
+              <v-toolbar-title>
+                <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
+                模板管理
+              </v-toolbar-title>
 
-      <v-simple-table fixed-header>
-        <template v-slot:default>
-          <thead>
-            <tr>
-              <th class="px-2">模板名称</th>
-              <th class="px-2">输出编码</th>
-              <th class="px-2">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(template, index) in templates" :key="templates.name">
-              <td class="px-2">{{ template.name }}</td>
-              <td class="px-2">{{ template.encode }}</td>
-              <td class="px-2">
-                <v-btn icon size="small" density="compact" @click.stop="openEditDialog(template, index)">
-                  <v-icon size="small">mdi-pencil</v-icon>
-                </v-btn>
-                <v-btn icon size="small" density="compact" @click.stop="confirmDelete(index)">
-                  <v-icon size="small">mdi-delete</v-icon>
-                </v-btn>
-              </td>
-            </tr>
-          </tbody>
-        </template>
-      </v-simple-table>
+              <v-btn class="me-2" prepend-icon="mdi-plus" rounded="lg" text="添加模板" border
+                @click="openAddDialog"></v-btn>
+            </v-toolbar>
+          </template>
+
+          <template v-slot:item.actions="{ item }">
+            <div class="d-flex ga-2 justify-end">
+              <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="openEditDialog(item)"></v-icon>
+              <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="confirmDelete(item)"></v-icon>
+            </div>
+          </template>
+        </v-data-table>
+      </v-sheet>
 
       <!-- 添加/编辑模板的对话框 -->
       <v-dialog v-model="dialog" max-width="800" max-height="600">
@@ -77,6 +68,11 @@ export default {
       currentIndex: -1,
       isEditing: false,
       encodeItems: ["text", "base64"],
+      headers: [
+        { title: '模板名称', key: 'name' },
+        { title: '编码格式', key: 'encode' },
+        { title: '操作', key: 'actions', align: 'end', sortable: false },
+      ]
     };
   },
   mounted() {
@@ -88,9 +84,8 @@ export default {
       this.isEditing = false;
       this.dialog = true;
     },
-    openEditDialog(template, index) {
+    openEditDialog(template) {
       this.currentTemplate = { ...template };
-      this.currentIndex = index;
       this.isEditing = true;
       this.dialog = true;
     },
@@ -118,8 +113,8 @@ export default {
       this.closeDialog();
       await this.fetchTemplate();
     },
-    confirmDelete(index) {
-      this.currentIndex = index;
+    confirmDelete(template) {
+      this.currentTemplate = template;
       this.confirmDialog = true;
     },
     async deleteTemplate() {
@@ -132,10 +127,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.v-list-item {
-  display: flex;
-  justify-content: space-between;
-}
-</style>
