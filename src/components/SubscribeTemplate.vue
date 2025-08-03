@@ -140,8 +140,6 @@ export default {
     async deleteTemplate() {
       await fetch(`/api/templates/${this.currentTemplate.name}`, {
         method: 'DELETE',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(this.currentTemplate)
       })
       await this.fetchTemplate();
       this.confirmDialog = false;
