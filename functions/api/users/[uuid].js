@@ -2,13 +2,17 @@ export async function onRequest({ request, env, params }) {
   const kv = env.KV;
   const uuid = params.uuid;
 
+  if (uuid.length === 0) {
+    return new Response('Invalid UUID', { status: 400 });
+  }
+
   if (request.method === 'PUT') {
-    const { uuid, name } = await request.json();
+    const obj = JSON.parse(await request.body());
     const existing = await kv.get(`user:${uuid}`);
     if (!existing) {
       return new Response('Not Found', { status: 404 });
     }
-    await kv.put(`user:${user}`, content);
+    await kv.put(`user:${uuid}`, JSON.stringify(obj));
     return new Response('User saved', { status: 201 });
   }
 

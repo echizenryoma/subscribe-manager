@@ -8,10 +8,7 @@ export async function onRequest({ request, env }) {
     const list = index ? JSON.parse(index) : [];
     const users = [];
     for (const uuid of list) {
-      users.push({
-        uuid: uuid,
-        name: await kv.get(`user:${uuid}`)
-      });
+      users.push(JSON.parse(await kv.get(`user:${uuid}`)));
     }
     return new Response(JSON.stringify(users), {
       headers: { "Content-Type": "application/json" }
@@ -19,8 +16,9 @@ export async function onRequest({ request, env }) {
   }
 
   if (request.method === 'POST') {
-    const { uuid, name } = await request.json();
-    await kv.put(`user:${uuid}`, name);
+    const obj = await request.json();
+    const uuid = obj.uuid;
+    await kv.put(`user:${uuid}`, JSON.stringify(obj));
     const index = await kv.get(index_key);
     const list = index ? JSON.parse(index) : [];
     if (!list.includes(uuid)) {
