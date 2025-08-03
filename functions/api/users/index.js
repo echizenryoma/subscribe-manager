@@ -19,12 +19,12 @@ export async function onRequest({ request, env }) {
   }
 
   if (request.method === 'POST') {
-    const { name, content } = await request.json();
-    await kv.put(`user:${user}`, content);
+    const { uuid, name } = await request.json();
+    await kv.put(`user:${user}`, name);
     const index = await kv.get(index_key);
     const list = index ? JSON.parse(index) : [];
-    if (!list.includes(name)) {
-      list.push(name);
+    if (!list.includes(uuid)) {
+      list.push(uuid);
     }
     await kv.put(index_key, JSON.stringify(list));
     return new Response('User saved', { status: 201 });
