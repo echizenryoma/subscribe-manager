@@ -35,7 +35,16 @@
             <span>{{ isEditing ? '编辑账户' : '添加账户' }}</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentUser.uuid" label="UUID" />
+            <v-row align="center">
+              <v-col cols="10">
+                <v-text-field v-model="currentUser.uuid" label="UUID" />
+              </v-col>
+              <v-col cols="2">
+                <v-btn icon @click="generateUUID">
+                  <v-icon>mdi-refresh</v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
             <v-text-field v-model="currentUser.name" label="账户名称" />
           </v-card-text>
           <v-card-actions>
@@ -122,7 +131,10 @@ export default {
       await this.fetchUser();
       this.confirmDialog = false;
     },
-  },
+    generateUUID() {
+      this.currentUser.uuid = crypto.randomUUID();
+    },
+  }
 };
 </script>
 
