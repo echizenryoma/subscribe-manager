@@ -2,19 +2,20 @@
   <v-app>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>模板管理</v-toolbar-title>
+        <v-toolbar-title>账户管理</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="openAddDialog">添加模板</v-btn>
+        <v-btn color="primary" @click="openAddDialog">添加账户</v-btn>
       </v-toolbar>
 
       <v-list>
         <v-list-item-group>
-          <v-list-item v-for="(template, index) in templates" :key="index" @click="openViewDialog(template)">
-            <v-list-item-content>
+          <v-list-item v-for="(template, index) in users" :key="index" @click="openViewDialog(template)">
+            <v-list-item-name>
               <div>
+                <strong>{{ template.uuid }}</strong>
                 <strong>{{ template.name }}</strong>
               </div>
-            </v-list-item-content>
+            </v-list-item-name>
             <v-list-item-action>
               <v-btn icon @click.stop="openEditDialog(template, index)">
                 <v-icon>mdi-pencil</v-icon>
@@ -27,19 +28,19 @@
         </v-list-item-group>
       </v-list>
 
-      <!-- 添加/编辑模板的对话框 -->
-      <v-dialog v-model="dialog" max-width="800" max-height="600">
+      <!-- 添加/编辑账户的对话框 -->
+      <v-dialog v-model="dialog" max-width="500">
         <v-card>
           <v-card-title>
-            <span>{{ isEditing ? '编辑模板' : '添加模板' }}</span>
+            <span>{{ isEditing ? '编辑账户' : '添加账户' }}</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentTemplate.name" label="模板名称" />
-            <v-textarea v-model="currentTemplate.content" label="模板内容" rows="10" />
+            <v-text-field v-model="currentUser.uuid" label="UUID" />
+            <v-text-field v-model="currentUser.name" label="账户名称" />
           </v-card-text>
           <v-card-actions>
             <v-btn color="blue darken-1" text @click="closeDialog">取消</v-btn>
-            <v-btn color="blue darken-1" text @click="saveTemplate">{{ isEditing ? '保存' : '添加' }}</v-btn>
+            <v-btn color="blue darken-1" text @click="saveUser">{{ isEditing ? '保存' : '添加' }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -48,10 +49,10 @@
       <v-dialog v-model="confirmDialog" max-width="290">
         <v-card>
           <v-card-title class="headline">确认删除</v-card-title>
-          <v-card-text>你确定要删除这个模板吗？</v-card-text>
+          <v-card-text>你确定要删除这个账户吗？</v-card-text>
           <v-card-actions>
             <v-btn color="blue darken-1" text @click="confirmDialog = false">取消</v-btn>
-            <v-btn color="blue darken-1" text @click="deleteTemplate">确认</v-btn>
+            <v-btn color="blue darken-1" text @click="deleteUser">确认</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -63,25 +64,25 @@
 export default {
   data() {
     return {
-      templates: [],
+      users: [],
       dialog: false,
       confirmDialog: false,
-      currentTemplate: { name: '', content: '' },
+      currentUser: { name: '', name: '' },
       currentIndex: -1,
       isEditing: false,
     };
   },
   mounted() {
-    this.fetchTemplate();
+    this.fetchUser();
   },
   methods: {
     openAddDialog() {
-      this.currentTemplate = { name: '', content: '' };
+      this.currentUser = { name: '', name: '' };
       this.isEditing = false;
       this.dialog = true;
     },
     openEditDialog(template, index) {
-      this.currentTemplate = { ...template };
+      this.currentUser = { ...template };
       this.currentIndex = index;
       this.isEditing = true;
       this.dialog = true;
@@ -89,36 +90,36 @@ export default {
     closeDialog() {
       this.dialog = false;
     },
-    async fetchTemplate() {
-      const response = await fetch('/api/templates');
-      this.templates = await response.json();
+    async fetchUser() {
+      const response = await fetch('/api/users');
+      this.users = await response.json();
     },
-    async saveTemplate() {
+    async saveUser() {
       if (this.isEditing) {
-        await fetch(`/api/templates/${this.currentTemplate.name}`, {
+        await fetch(`/api/users/${this.currentUser.name}`, {
           method: 'PUT',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(this.currentTemplate)
+          headers: { 'name-type': 'application/json' },
+          body: JSON.stringify(this.currentUser)
         })
       } else {
-        await fetch('/api/templates', {
+        await fetch('/api/users', {
           method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(this.currentTemplate)
+          headers: { 'name-type': 'application/json' },
+          body: JSON.stringify(this.currentUser)
         })
       }
       this.closeDialog();
-      await this.fetchTemplate();
+      await this.fetchUser();
     },
     confirmDelete(index) {
       this.currentIndex = index;
       this.confirmDialog = true;
     },
-    async deleteTemplate() {
-      await fetch(`/api/templates/${this.currentTemplate.name}`, {
+    async deleteUser() {
+      await fetch(`/api/users/${this.currentUser.name}`, {
         method: 'DELETE',
       })
-      await this.fetchTemplate();
+      await this.fetchUser();
       this.confirmDialog = false;
     },
   },
@@ -128,6 +129,6 @@ export default {
 <style>
 .v-list-item {
   display: flex;
-  justify-content: space-between;
+  justify-name: space-between;
 }
 </style>
