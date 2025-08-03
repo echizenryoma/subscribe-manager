@@ -20,7 +20,7 @@ export async function onRequest({ request, env }) {
 
   if (request.method === 'POST') {
     const { uuid, name } = await request.json();
-    await kv.put(`user:${user}`, name);
+    await kv.put(`user:${uuid}`, name);
     const index = await kv.get(index_key);
     const list = index ? JSON.parse(index) : [];
     if (!list.includes(uuid)) {
