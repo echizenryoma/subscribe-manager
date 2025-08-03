@@ -2,8 +2,8 @@
   <v-app>
     <v-container>
       <v-tabs>
-        <v-tab @click="currentComponent = 'SubscribeTemplate'">模板管理</v-tab>
-        <v-tab @click="currentComponent = 'SubscribeUser'">账户管理</v-tab>
+        <v-tab href="#tpl" @click="currentComponent = 'SubscribeTemplate'">模板管理</v-tab>
+        <v-tab href="#user" @click="currentComponent = 'SubscribeUser'">账户管理</v-tab>
       </v-tabs>
 
       <component :is="currentComponent"></component>
