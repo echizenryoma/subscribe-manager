@@ -9,7 +9,7 @@
 
       <v-list>
         <v-list-item-group>
-          <v-list-item v-for="(template, index) in templates" :key="index" @click="openViewDialog(template)">
+          <v-list-item v-for="(template, index) in templates" :key="index">
             <v-list-item-content>
               <div>
                 <strong>{{ template.name }}</strong>
