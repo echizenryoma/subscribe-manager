@@ -1,5 +1,4 @@
 export async function onRequest({ request, env }) {
-  const url = new URL(request.url);
   const kv = env.KV;
   const index_key = "users"
 

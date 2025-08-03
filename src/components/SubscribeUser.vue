@@ -6,7 +6,7 @@
           <template v-slot:top>
             <v-toolbar flat>
               <v-toolbar-title>
-                <v-icon color="medium-emphasis" icon="mdi-book-multiple" size="x-small" start></v-icon>
+                <v-icon color="medium-emphasis" icon="mdi-account-multiple" size="x-small" start></v-icon>
                 账户管理
               </v-toolbar-title>
 

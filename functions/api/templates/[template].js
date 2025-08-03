@@ -1,6 +1,7 @@
 export async function onRequest({ request, env, params }) {
   const kv = env.KV;
   const name = params.template;
+  const index_key = "templates"
 
   if (request.method === 'PUT') {
     const { name, content } = await request.json();
@@ -14,6 +15,12 @@ export async function onRequest({ request, env, params }) {
 
   if (request.method === 'DELETE') {
     await kv.delete(`template:${name}`);
+    const index = await kv.get(index_key);
+    const list = index ? JSON.parse(index) : [];
+    if (list.includes(name)) {
+      list.delete(name);
+      await kv.put(index_key, JSON.stringify(list));
+    }
     return new Response("Template deleted", { status: 204 });
   }
 
