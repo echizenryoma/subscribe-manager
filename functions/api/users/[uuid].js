@@ -3,7 +3,7 @@ export async function onRequest({ request, env, params }) {
   const uuid = params.uuid;
   const index_key = "users"
 
-  if (uuid.length === 0) {
+  if (!uuid || uuid.length === 0) {
     return new Response('Invalid UUID', { status: 400 });
   }
 
@@ -22,8 +22,8 @@ export async function onRequest({ request, env, params }) {
     const index = await kv.get(index_key);
     const list = index ? JSON.parse(index) : [];
     if (list.includes(uuid)) {
-      list.delete(uuid);
-      await kv.put(index_key, JSON.stringify(list));
+      const newList = list.filter(id => id !== uuid);
+      await kv.put(index_key, JSON.stringify(newList));
     }
     return new Response("User deleted", { status: 204 });
   }
