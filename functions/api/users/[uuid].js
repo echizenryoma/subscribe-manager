@@ -8,7 +8,7 @@ export async function onRequest({ request, env, params }) {
   }
 
   if (request.method === 'PUT') {
-    const obj = JSON.parse(await request.body());
+    const obj = await request.json();
     const existing = await kv.get(`user:${uuid}`);
     if (!existing) {
       return new Response('Not Found', { status: 404 });
