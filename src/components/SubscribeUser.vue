@@ -105,7 +105,7 @@ export default {
     },
     async saveUser() {
       if (this.isEditing) {
-        await fetch(`/api/users/${this.currentUser.name}`, {
+        await fetch(`/api/users/${this.currentUser.uuid}`, {
           method: 'PUT',
           headers: { 'name-type': 'application/json' },
           body: JSON.stringify(this.currentUser)
